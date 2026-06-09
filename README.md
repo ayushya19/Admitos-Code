@@ -44,4 +44,4 @@ python evaluate.py
 
 - The current implementation expects radar `.dat` files organized under the dataset root in the seven dataset folders defined in `config.py`.
 - Output checkpoints, logs, and results are saved under `outputs/` by default.
-- `preprocessing.py` contains the radar pre-processing pipeline and can be used independently for data inspection and debugging.
+- `preprocessing.py` contains the radar pre-processing pipeline and can be used independently for data inspection and debugging. It is not directly necessary for the whole training/testing pipeline. 
