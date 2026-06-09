@@ -121,7 +121,7 @@ STREAM_FEATURE_DIM = 256
 
 # Fusion strategy: 'late' (concatenate after per-stream FC) 
 #                  'mid'  (concatenate after last conv block)
-FUSION_TYPE = 'late'
-
+FUSION_TYPE = 'late' # The model currently implements only the 'late' fusion.
+ 
 # Dropout probability in classifier head
 DROPOUT = 0.5
