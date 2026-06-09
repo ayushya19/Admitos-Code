@@ -152,20 +152,3 @@ class ThreeStreamCNN(nn.Module):
 # ══════════════════════════════════════════════════════════════════════
 def count_parameters(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
-
-# ══════════════════════════════════════════════════════════════════════
-# 5.  SANITY CHECK
-# ══════════════════════════════════════════════════════════════════════
-if __name__ == '__main__':
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    print(f"Using device: {device}")
-    model = ThreeStreamCNN().to(device)
-
-    # Dummy batch: [B=4, 3 channels, 128x128]
-    dummy = torch.randn(4, 3, 128, 128).to(device)
-    logits = model(dummy)
-
-    print(f"  Input  shape : {dummy.shape}")
-    print(f"  Output shape : {logits.shape}")          # expect [4, 6]
-    print(f"  Trainable parameters: {count_parameters(model):,}")
-    print("model.py sanity check passed.")
