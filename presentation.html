@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radar Human Activity Classification</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/theme/black.css">
+    <style>
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+            text-transform: none;
+            font-weight: bold;
+        }
+        .reveal { font-size: 36px; }
+        .reveal pre { width: 100%; }
+        .reveal code { padding: 2px 6px; }
+        table { font-size: 0.9em; }
+        .metric-box { 
+            background: rgba(0, 255, 0, 0.1); 
+            padding: 20px; 
+            border-radius: 10px; 
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+        .small { font-size: 0.8em; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Slide 1: Title -->
+            <section>
+                <h1>Radar Human Activity Classification</h1>
+                <h3>A Deep Learning Approach</h3>
+                <p style="margin-top: 60px; color: #00ff00;">
+                    <strong>Test Accuracy:</strong> 89.44%<br>
+                    <strong>F1 Score:</strong> 89.80%
+                </p>
+                <p style="margin-top: 40px; font-size: 0.7em;">June 2026</p>
+            </section>
+
+            <!-- Slide 2: Problem Statement -->
+            <section>
+                <h2>Why Radar Activity Classification?</h2>
+                <h3 style="color: #ff6b6b;">Traditional Challenges</h3>
+                <ul>
+                    <li>📷 Computer vision requires line-of-sight and lighting</li>
+                    <li>🔒 Privacy concerns with cameras</li>
+                    <li>❌ Limited performance in occluded/dark conditions</li>
+                </ul>
+                <h3 style="color: #51cf66; margin-top: 40px;">Our Solution: Radar Micro-Doppler Signals</h3>
+                <ul>
+                    <li>✅ Works through walls and in darkness</li>
+                    <li>✅ Privacy-preserving (no visual data)</li>
+                    <li>✅ Captures detailed motion signatures</li>
+                </ul>
+            </section>
+
+            <!-- Slide 3: Activities -->
+            <section>
+                <h2>6 Activities Classified</h2>
+                <table style="width: 100%; margin-top: 40px;">
+                    <tr>
+                        <td style="font-size: 1.1em; padding: 15px;">🚶 Walking</td>
+                        <td style="font-size: 1.1em; padding: 15px;">🪑 Sitting down</td>
+                        <td style="font-size: 1.1em; padding: 15px;">⬆️ Standing up</td>
+                    </tr>
+                    <tr>
+                        <td style="font-size: 1.1em; padding: 15px;">🎁 Pick up object</td>
+                        <td style="font-size: 1.1em; padding: 15px;">💧 Drink water</td>
+                        <td style="font-size: 1.1em; padding: 15px; color: #ff6b6b;"><strong>⚠️ Fall</strong></td>
+                    </tr>
+                </table>
+            </section>
+
+            <!-- Slide 4: Data Processing -->
+            <section>
+                <h2>From Raw Radar to Machine Learning</h2>
+                <h3 style="color: #74c0fc;">Three Complementary Representations</h3>
+                <table style="width: 100%; font-size: 0.85em; margin-top: 30px;">
+                    <thead>
+                        <tr>
+                            <th>Channel</th>
+                            <th>Representation</th>
+                            <th>Captures</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1</strong></td>
+                            <td>Spectrogram</td>
+                            <td>Frequency content over time</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2</strong></td>
+                            <td>Range-Time</td>
+                            <td>Object distance vs. time</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3</strong></td>
+                            <td>Range-Doppler</td>
+                            <td>Distance vs. velocity signatures</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <p style="margin-top: 30px; font-size: 0.9em;">All normalized to 64×64 → <strong>[3, 64, 64]</strong> tensor per sample</p>
+            </section>
+
+            <!-- Slide 5: Architecture -->
+            <section>
+                <h2>Three-Stream CNN Architecture</h2>
+                <pre style="font-size: 0.65em; width: 100%;">
+Input [B, 3, 64, 64]
+    ↓
+    ├─→ Stream 1 (Spectrogram) ────→ 4-Block CNN → 256-d
+    ├─→ Stream 2 (Range-Time) ─────→ 4-Block CNN → 256-d
+    └─→ Stream 3 (Range-Doppler) ──→ 4-Block CNN → 256-d
+    
+                  Concatenation
+                       ↓
+              768-d fused vector
+                       ↓
+         Classifier (768 → 384 → 192 → 6)
+                       ↓
+            Output: Class probabilities
+                </pre>
+                <p style="margin-top: 30px; font-size: 0.9em;">
+                    <strong>Key:</strong> Late fusion allows each stream to learn specialized representations
+                </p>
+            </section>
+
+            <!-- Slide 6: Overall Results -->
+            <section>
+                <h2>Test Set Results</h2>
+                <div class="metric-box">
+                    <p style="margin: 10px;"><strong>Accuracy:</strong> <span style="color: #51cf66; font-size: 1.2em;">89.44%</span></p>
+                    <p style="margin: 10px;"><strong>Precision (macro):</strong> <span style="color: #51cf66; font-size: 1.2em;">90.85%</span></p>
+                    <p style="margin: 10px;"><strong>Recall (macro):</strong> <span style="color: #51cf66; font-size: 1.2em;">89.80%</span></p>
+                    <p style="margin: 10px;"><strong>F1 Score (macro):</strong> <span style="color: #51cf66; font-size: 1.2em;">89.80%</span></p>
+                </div>
+                <p style="font-size: 0.9em; margin-top: 30px;">Evaluated on 180 held-out test samples</p>
+            </section>
+
+            <!-- Slide 7: Per-Class Performance -->
+            <section>
+                <h2>Per-Class Performance</h2>
+                <table style="width: 100%; font-size: 0.8em; margin-top: 20px;">
+                    <thead style="background: rgba(255, 255, 255, 0.1);">
+                        <tr>
+                            <th style="padding: 8px;">Activity</th>
+                            <th style="padding: 8px;">Precision</th>
+                            <th style="padding: 8px;">Recall</th>
+                            <th style="padding: 8px;">F1-Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr style="background: rgba(81, 207, 102, 0.2);">
+                            <td style="padding: 8px;">🚶 Walking</td>
+                            <td style="padding: 8px;"><strong style="color: #51cf66;">100.0%</strong></td>
+                            <td style="padding: 8px;"><strong style="color: #51cf66;">100.0%</strong></td>
+                            <td style="padding: 8px;"><strong style="color: #51cf66;">100.0%</strong></td>
+                        </tr>
+                        <tr style="background: rgba(81, 207, 102, 0.2);">
+                            <td style="padding: 8px;">⚠️ Fall</td>
+                            <td style="padding: 8px;"><strong style="color: #51cf66;">100.0%</strong></td>
+                            <td style="padding: 8px;"><strong style="color: #51cf66;">95.2%</strong></td>
+                            <td style="padding: 8px;"><strong style="color: #51cf66;">97.6%</strong></td>
+                        </tr>
+                        <tr style="background: rgba(81, 207, 102, 0.15);">
+                            <td style="padding: 8px;">🪑 Sitting down</td>
+                            <td style="padding: 8px;">100.0%</td>
+                            <td style="padding: 8px;">87.5%</td>
+                            <td style="padding: 8px;">93.3%</td>
+                        </tr>
+                        <tr style="background: rgba(81, 207, 102, 0.15);">
+                            <td style="padding: 8px;">⬆️ Standing up</td>
+                            <td style="padding: 8px;">88.6%</td>
+                            <td style="padding: 8px;">96.9%</td>
+                            <td style="padding: 8px;">92.5%</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 8px;">💧 Drink water</td>
+                            <td style="padding: 8px;">72.5%</td>
+                            <td style="padding: 8px;">93.5%</td>
+                            <td style="padding: 8px;">81.7%</td>
+                        </tr>
+                        <tr style="background: rgba(255, 107, 107, 0.1);">
+                            <td style="padding: 8px;">🎁 Pick up object</td>
+                            <td style="padding: 8px;">84.0%</td>
+                            <td style="padding: 8px;">65.6%</td>
+                            <td style="padding: 8px;">73.7%</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </section>
+
+            <!-- Slide 8: Key Insights -->
+            <section>
+                <h2>Key Achievements</h2>
+                <h3 style="color: #51cf66; margin-top: 40px;">What Went Well</h3>
+                <ul style="margin-top: 30px;">
+                    <li>✅ <strong>Fall detection: 97.6% F1</strong> — excellent for safety-critical applications</li>
+                    <li>✅ <strong>Perfect Walking classification</strong> — distinct radar signature</li>
+                    <li>✅ <strong>Three-stream fusion proved effective</strong> — each channel captures unique patterns</li>
+                    <li>✅ <strong>No overfitting observed</strong> — clean train/val convergence</li>
+                </ul>
+                <h3 style="color: #ffa94d; margin-top: 40px;">Challenges</h3>
+                <ul>
+                    <li>⚠️ <strong>"Pick up object"</strong> (73.7% F1) — high variability in object size/location</li>
+                </ul>
+            </section>
+
+            <!-- Slide 9: Deployment & Applications -->
+            <section>
+                <h2>Real-World Applications</h2>
+                <h3 style="color: #74c0fc; margin-top: 40px;">Use Cases</h3>
+                <ul style="margin-top: 30px;">
+                    <li>🏥 <strong>Healthcare:</strong> Fall detection for elderly monitoring</li>
+                    <li>🏠 <strong>Smart Homes:</strong> Activity-aware automation</li>
+                    <li>🔒 <strong>Security:</strong> Privacy-preserving intrusion detection</li>
+                    <li>🤖 <strong>Robotics:</strong> Human-aware robot navigation</li>
+                </ul>
+                <h3 style="color: #b197fc; margin-top: 40px;">Future Improvements</h3>
+                <ul style="margin-top: 20px; font-size: 0.9em;">
+                    <li>Expand dataset beyond 192 samples</li>
+                    <li>Multi-person activity recognition</li>
+                    <li>Edge device deployment (TensorRT)</li>
+                </ul>
+            </section>
+
+            <!-- Slide 10: Summary -->
+            <section>
+                <h2>Summary</h2>
+                <h3 style="color: #51cf66; margin-top: 40px;">Key Takeaways</h3>
+                <div style="margin-top: 40px; font-size: 0.95em; line-height: 1.8;">
+                    <p>🔒 <strong>Privacy-preserving</strong> alternative to camera-based systems</p>
+                    <p>📡 Works in <strong>darkness and through obstacles</strong></p>
+                    <p>🎯 <strong>89.44% accuracy</strong> with robust Fall detection (97.6% F1)</p>
+                    <p>🏗️ <strong>Clean, reproducible ML pipeline</strong> ready for deployment</p>
+                </div>
+            </section>
+
+            <!-- Slide 11: Q&A -->
+            <section>
+                <h1 style="color: #51cf66;">Questions?</h1>
+                <p style="margin-top: 60px; font-size: 1.1em;">
+                    Discussion Points:<br>
+                    • Multi-person scenarios<br>
+                    • Real-world deployment constraints<br>
+                    • Scalability and edge computing<br>
+                    • Expanding activity classes
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.5.0/dist/reveal.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            transition: 'slide',
+            transitionSpeed: 'default',
+            controls: true,
+            progress: true,
+            overview: true,
+            keyboard: true,
+        });
+    </script>
+</body>
+</html>
